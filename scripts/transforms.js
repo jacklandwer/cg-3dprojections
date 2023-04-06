@@ -5,23 +5,83 @@ function mat4x4Perspective(prp, srp, vup, clip) {
     // 3. shear such that CW is on the z-axis
     // 4. scale such that view volume bounds are ([z,-z], [z,-z], [-1,zmin])
 
-    // ...
-    // let transform = Matrix.multiply([...]);
-    // return transform;
 
+    // 1. translate PRP to origin
+    let trans = new Matrix(4, 4);
+    let x = prp[0];
+    let y = prp[1];
+    let z = prp[2];
+    if (x != 0) {
+        x = -1 * x;
+    }
+    mat4x4Translate(trans, x, -y, -z);
+    console.log(trans);
 
-    let tanHalfFOV = Math.tan(fov * 0.5);
-    let zRange = near - far;
+    // 2. rotate VRC such that (u,v,n) align with (x,y,z)
+    let vprp = new Vector3(prp[0], prp[1], prp[2]);
+    let vsrp = new Vector3(srp[0], srp[1], srp[2]);
 
-    let projectionMatrix = mat4();
-    projectionMatrix[0][0] = 1.0 / (tanHalfFOV * aspect);
-    projectionMatrix[1][1] = 1.0 / tanHalfFOV;
-    projectionMatrix[2][2] = (-near - far) / zRange;
-    projectionMatrix[2][3] = (2 * far * near) / zRange;
-    projectionMatrix[3][2] = 1.0;
+    let n = vprp.subtract(vsrp);
+    console.log(n)
+    n.normalize();
 
-    return projectionMatrix;
-    // I THINK THIS WOULD WORK... TEST THIS TO MAKE SURE IT FUNCTIONS AS I THINK IT WOULD...
+    let vups = new Vector3(vup[0], vup[1], vup[2]);
+    let u = vups.cross(n);
+
+    u.normalize();
+
+    console.log(u);
+
+    let v = n.cross(u);
+    console.log(v);
+    let Rot = new Matrix(4, 4);
+    Rot.values = [
+        [u.x, u.y, u.z, 0],
+        [v.x, v.y, v.z, 0],
+        [n.x, n.y, n.z, 0],
+        [0, 0, 0, 1]];
+
+    console.log(Rot.values)
+
+    // 3. shear such that CW is on the z-axis
+    //DOP - direction of projection. VRC Virtual Viewing Coordinates (VRC) space
+    let left = clip[0];
+    let right = clip[1];
+    let bottom = clip[2];
+    let top = clip[3];
+    let near = clip[4];
+    let far = clip[5];
+
+    let cw = new Vector3((left + right) / 2, (bottom + top) / 2, -near);
+
+    let DOP = cw - prp;
+
+    let shx = -cw.x / cw.z;
+    let shy = -cw.y / cw.z;
+
+    let shearMatrix = new Matrix(4, 4);
+
+    mat4x4ShearXY(shearMatrix, shx, shy);
+    console.log(shearMatrix)
+
+    // 4. scale such that view volume bounds are ([z,-z], [z,-z], [-1,zmin])
+    let zmin = -near / far;
+    let xScale = (2 * near / ((right - left) * far));
+    let yScale = (2 * near / ((top - bottom) * far));
+    let zScale = 1 / (far);
+
+    // Create scaling matrix
+    let scalingMatrix = new Matrix(4, 4);
+    mat4x4Scale(scalingMatrix, xScale, yScale, zScale);
+
+    let nper = Matrix.multiply([scalingMatrix, shearMatrix, Rot, trans]);
+    console.log(nper);
+
+    let Mper = mat4x4MPer();
+    let transform = Matrix.multiply([Mper, nper]);
+    console.log(transform);
+    return transform;
+
 
 }
 
@@ -46,18 +106,21 @@ function mat4x4MPer() {
 
     return mper;
     // CHECK IF THIS WORKS... 
-    
+
 }
 
 // create a 4x4 matrix to translate/scale projected vertices to the viewport (window)
 function mat4x4Viewport(width, height) {
     let viewport = new Matrix(4, 4);
     // viewport.values = ...;
-
-
-
-
+    viewport.values = [
+        [width / 2, 0, 0, width / 2],
+        [0, height / 2, 0, height / 2],
+        [0, 0, 0.5, 0.5],
+        [0, 0, 0, 1]
+    ];
     return viewport;
+    // CHECK IF THIS WORKS....
 }
 
 

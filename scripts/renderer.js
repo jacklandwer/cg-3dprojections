@@ -83,6 +83,7 @@ class Renderer {
 
         // Update the SRP coordinates in the processed scene object
         this.scene.view.srp = [finalSrpX, finalSrpY, finalSrpZ]; //DOES THIS NEED TO BE MADE INTO A VECTOR3???
+        //srp: Vector3(scene.view.srp[0], scene.view.srp[1], scene.view.srp[2]),
 
     }
 
@@ -116,6 +117,7 @@ class Renderer {
 
         // Update the SRP coordinates in the processed scene object
         this.scene.view.srp = [finalSrpX, finalSrpY, finalSrpZ]; //DOES THIS NEED TO BE MADE INTO A VECTOR3???
+        //srp: Vector3(scene.view.srp[0], scene.view.srp[1], scene.view.srp[2]),
 
     }
 
@@ -171,7 +173,7 @@ class Renderer {
         // update SRP
         let srp = view.srp;
         srp[2] -= dz;
-        
+
         // update the scene
         this.updateScene(this.scene);
     }
@@ -218,54 +220,157 @@ class Renderer {
         Sphere: defined by center point, radius, number of slices, and number of stacks.
         */
 
-        //loop through each model type
-        //use the provided metrics of the models to generate vertices and edges for them.
 
-        // think about how to go about implementing this efficiently...
+        for (let i = 0; i < this.scene.models.length; i++) {
+            let model = { type: this.scene.models[i].type }; // should i be using "model" as the var and then be pushing them to "models" after generating vertices?? 
+            let models = this.scene.models; // need this or no??
 
-        // Do i want to be adding the vertices here or am I supposed to add them directly in the json file??? 
-        // I THINK THE LOGIC FOR THESE IS ALONG THE RIGHT LINES, NEED TO ENSURE STUFF IS ACCESSED AND SET PROPERLY..
+            // do we need a 'generic' type conditional here for anything? or does the contents of processScene() handle all of that on its own?? 
+            /*
+            if(this.scene.models.type === 'generic'){
 
-        let models = this.scene.models;
-        //let model = { type: scene.models[i].type }; 
-        // should i be using "model" as the var and then be pushing them to "models"?? 
+            }
+            */
 
-        // Generate vertices for the cube
-        const cubeHalfWidth = this.scene.models[0].width / 2;
-        const cubeHalfHeight = this.scene.models[0].height / 2;
-        const cubeHalfDepth = this.scene.models[0].depth / 2;
-        models[0].vertices.push(
-            [models[0].center[0] - cubeHalfWidth, models[0].center[1] - cubeHalfHeight, models[0].center[2] - cubeHalfDepth],
-            [models[0].center[0] - cubeHalfWidth, models[0].center[1] - cubeHalfHeight, models[0].center[2] + cubeHalfDepth],
-            [models[0].center[0] - cubeHalfWidth, models[0].center[1] + cubeHalfHeight, models[0].center[2] - cubeHalfDepth],
-            [models[0].center[0] - cubeHalfWidth, models[0].center[1] + cubeHalfHeight, models[0].center[2] + cubeHalfDepth],
-            [models[0].center[0] + cubeHalfWidth, models[0].center[1] - cubeHalfHeight, models[0].center[2] - cubeHalfDepth],
-            [models[0].center[0] + cubeHalfWidth, models[0].center[1] - cubeHalfHeight, models[0].center[2] + cubeHalfDepth],
-            [models[0].center[0] + cubeHalfWidth, models[0].center[1] + cubeHalfHeight, models[0].center[2] - cubeHalfDepth],
-            [models[0].center[0] + cubeHalfWidth, models[0].center[1] + cubeHalfHeight, models[0].center[2] + cubeHalfDepth]
-        );
-        // NEED TO CHECK TO SEE IF THIS WAY OF ADDING VERTICES TO THE CUBE IS CORRECT...
+            if (this.scene.models[i].type === 'cube') {
+                console.log('generating cube vertices');
+
+                // Generate vertices for the cube
+                model[0].vertices = []; //Cannot set properties of undefined (setting 'vertices')
+                let cubeHalfWidth = this.scene.models[0].width / 2;
+                let cubeHalfHeight = this.scene.models[0].height / 2;
+                let cubeHalfDepth = this.scene.models[0].depth / 2;
+                model[0].vertices.push(Vector4(
+                    // the "models" in here should be coming from the json right?? 
+                    // should the following be made into vector4's??? yes? 
+                    [models[0].center[0] - cubeHalfWidth, models[0].center[1] - cubeHalfHeight, models[0].center[2] - cubeHalfDepth, 1],
+                    [models[0].center[0] - cubeHalfWidth, models[0].center[1] - cubeHalfHeight, models[0].center[2] + cubeHalfDepth, 1],
+                    [models[0].center[0] - cubeHalfWidth, models[0].center[1] + cubeHalfHeight, models[0].center[2] - cubeHalfDepth, 1],
+                    [models[0].center[0] - cubeHalfWidth, models[0].center[1] + cubeHalfHeight, models[0].center[2] + cubeHalfDepth, 1],
+                    [models[0].center[0] + cubeHalfWidth, models[0].center[1] - cubeHalfHeight, models[0].center[2] - cubeHalfDepth, 1],
+                    [models[0].center[0] + cubeHalfWidth, models[0].center[1] - cubeHalfHeight, models[0].center[2] + cubeHalfDepth, 1],
+                    [models[0].center[0] + cubeHalfWidth, models[0].center[1] + cubeHalfHeight, models[0].center[2] - cubeHalfDepth, 1],
+                    [models[0].center[0] + cubeHalfWidth, models[0].center[1] + cubeHalfHeight, models[0].center[2] + cubeHalfDepth, 1]
+                ));
+                // NEED TO CHECK TO SEE IF THIS WAY OF ADDING VERTICES TO THE CUBE IS CORRECT...
 
 
-        // Generate vertices for the cylinder
-        for (let i = 0; i < scene.models[1].sides; i++) {
-            const theta = i * 2 * Math.PI / models[1].sides;
-            const x = models[1].center[0] + models[1].radius * Math.cos(theta);
-            const y = models[1].center[1] + models[1].height / 2;
-            const z = models[1].center[2] + models[1].radius * Math.sin(theta);
-            models[1].vertices.push([x, y, z]);
+                console.log('vertices' + this.scene.models[0].vertices); // this is showing that the vertices are currently being pushed in as Objects so prob need to be made into vector4's..
+
+            }
+
+            if (this.scene.models[i].type === 'cone') {
+                console.log('generating cone vertices');
+
+                //modify this to add the vertices to the model...
+                model.vertices = [];
+                let TWO_PI = 2 * Math.PI;
+                let deltaTheta = TWO_PI / models[2].sides;
+                let halfHeight = models[2].height / 2;
+
+                // Create the base of the cone
+                for (let i = 0; i < models[2].sides; i++) {
+                    let theta = i * deltaTheta;
+                    let x = models[2].center[0] + (models[2].radius * Math.cos(theta));
+                    let z = models[2].center[2] + (models[2].radius * Math.sin(theta));
+
+                    model.vertices.push(x, models[2].center[1] - halfHeight, z);
+                }
+
+                // Create the tip of the cone
+                model.vertices.push(center[0], center[1] + halfHeight, center[2]);
+
+                // Create the sides of the cone
+                for (let i = 0; i < models[2].sides; i++) {
+                    let theta = i * deltaTheta;
+                    let x = models[2].center[0] + (models[2].radius * Math.cos(theta));
+                    let z = models[2].center[2] + (models[2].radius * Math.sin(theta));
+
+                    model.vertices.push(x, models[2].center[1] - halfHeight, z);
+                    model.vertices.push(models[2].center[0], models[2].center[1] + halfHeight, models[2].center[2]);
+                }
+                /*
+                "type": "cone",
+                "center": [0, 0, 0],
+                "radius": 1,
+                "height": 2,
+                "sides": 16
+                */
+
+                // NEED TO CHECK IF THIS WAY OF ADDING VERTICES TO A CONE IS CORRECT...
+            }
+
+            if (this.scene.models[i].type === 'cylinder') {
+                console.log('generating cylinder vertices');
+
+                // Generate vertices for the cylinder
+                model.vertices = [];
+                for (let i = 0; i < this.scene.models[1].sides; i++) {
+                    let theta = i * 2 * Math.PI / models[1].sides;
+                    let x = models[1].center[0] + models[1].radius * Math.cos(theta);
+                    let y = models[1].center[1] + models[1].height / 2;
+                    let z = models[1].center[2] + models[1].radius * Math.sin(theta);
+                    model[1].vertices.push(Vector4([x, y, z, 1])); // does this need to be made into a vector4?? yes? 
+                }
+
+                for (let i = 0; i < this.scene.models[1].sides; i++) {
+                    let theta = i * 2 * Math.PI / models[1].sides;
+                    let x = models[1].center[0] + models[1].radius * Math.cos(theta);
+                    let y = models[1].center[1] - models[1].height / 2;
+                    let z = models[1].center[2] + models[1].radius * Math.sin(theta);
+                    model[1].vertices.push(Vector4([x, y, z, 1])); // does this need to be made into a vector4?? yes? 
+                }
+                // NEED TO CHECK TO SEE IF THIS WAY OF ADDING VERTICES TO THE CYLINDER IS CORRECT...
+
+                console.log('vertices ' + this.scene.models[1].vertices); // why is vertices undefined here... should be pushed...
+            }
+
+            if (this.scene.models[i].type === 'sphere') {
+                console.log('generating sphere vertices');
+
+                //modify this to add the vertices to the model...
+                let vertices = [];
+                let PI = Math.PI;
+                let TWO_PI = 2 * PI;
+                let deltaPhi = PI / models[3].stacks;
+                let deltaTheta = TWO_PI / models[3].slices;
+
+                for (let i = 0; i <= models[3].stacks; i++) {
+                    let phi = i * deltaPhi;
+                    let sinPhi = Math.sin(phi);
+                    let cosPhi = Math.cos(phi);
+
+                    for (let j = 0; j <= models[3].slices; j++) {
+                        let theta = j * deltaTheta;
+                        let sinTheta = Math.sin(theta);
+                        let cosTheta = Math.cos(theta);
+
+                        let x = models[3].center[0] + (models[3].radius * sinPhi * cosTheta);
+                        let y = models[3].center[1] + (models[3].radius * sinPhi * sinTheta);
+                        let z = models[3].center[2] + (models[3].radius * cosPhi);
+
+                        vertices.push(x, y, z);
+                    }
+                }
+
+                /*
+                "type": "sphere",
+                "center": [0, 0, 0],
+                "radius": 1,
+                "slices": 16,
+                "stacks": 8
+                */
+                // NEED TO CHECK IF THIS WAY OF ADDING VERTICES TO THE SPHERE IS CORRECT...
+            }
+
+
+            console.log({ view, model }); // using to check the values of the view/models.
+
+
+
         }
 
-        for (let i = 0; i < models[1].sides; i++) {
-            const theta = i * 2 * Math.PI / models[1].sides;
-            const x = models[1].center[0] + models[1].radius * Math.cos(theta);
-            const y = models[1].center[1] - models[1].height / 2;
-            const z = models[1].center[2] + models[1].radius * Math.sin(theta);
-            models[1].vertices.push([x, y, z]);
-        }
-        // NEED TO CHECK TO SEE IF THIS WAY OF ADDING VERTICES TO THE CYLINDER IS CORRECT...
 
-        console.log({ view, models }); // using to check the values of the view/models.
 
 
     }

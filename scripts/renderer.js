@@ -56,7 +56,7 @@ class Renderer {
 
 
 
-        
+
 
     }
 
@@ -227,25 +227,160 @@ class Renderer {
         Cylinder: defined by center point, radius, height, and number of sides.
         Sphere: defined by center point, radius, number of slices, and number of stacks.
         */
-       
+
+
+        /* Bryan's code: 
+        let PRP = [0, 10, -5];
+        let SRP = [20, 15, -40];
+        let VUP = [1, 1, 0];
+
+        //translate in the future for vector 4 to get them for the buttons. 
+
+
+        let Clip = [-12, 6, -12, 6, 10, 100];
+
+        let clone = mat4x4Perspective(PRP, SRP, VUP, Clip);
+        console.log('draw()');
+
+
+        console.log(this.scene.view)
+        //console.log(this.scene.models[0].vertices[0])
+        let ob = new Matrix(4, 4)
+
+        let view = mat4x4Viewport(this.canvas.width, this.canvas.height);
+        for (let i = 0; i < this.scene.models.length; i++) {
+            let model = this.scene.models[i];
+            console.log(model)
+            if (model.type === 'cube') {
+                console.log('generating cube vertices');
+
+                // Generate vertices for the cube
+                model.vertices = []; //Cannot set properties of undefined (setting 'vertices')
+                let cubeHalfWidth = model.width / 2;
+                let cubeHalfHeight = model.height / 2;
+                let cubeHalfDepth = model.depth / 2;
+                model.vertices = [Vector4(model.center.x - cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z - cubeHalfDepth, 1),
+                Vector4(model.center.x - cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z + cubeHalfDepth, 1),
+                Vector4(model.center.x - cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z - cubeHalfDepth, 1),
+                Vector4(model.center.x - cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z + cubeHalfDepth, 1),
+                Vector4(model.center.x + cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z - cubeHalfDepth, 1),
+                Vector4(model.center.x + cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z + cubeHalfDepth, 1),
+                Vector4(model.center.x + cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z - cubeHalfDepth, 1),
+                Vector4(model.center.x + cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z + cubeHalfDepth, 1)];
+
+                console.log(model)
+                let edges = []
+                for (let i = 0; i < model.vertices.length; i++) {
+                    for (let j = i + 1; j < model.vertices.length; j++) {
+                        // Check if the vertices share two coordinates and connect them if they do
+                        let sharedCoords = 0;
+                        for (let k = 0; k < 3; k++) {
+                            if (model.vertices[i][k] === model.vertices[j][k]) {
+                                sharedCoords++;
+                            }
+                        }
+                        if (sharedCoords === 2) {
+                            edges.push([i, j]);
+                        }
+                    }
+                }
+                edges.push([0, 1, 3, 2, 0]); // Bottom face
+                edges.push([4, 5, 7, 6, 4]); // Top face
+                edges.push([0, 4]); // Side edges
+                edges.push([1, 5]);
+                edges.push([2, 6]);
+                edges.push([3, 7]);
+
+                // Add the edges to the model object
+                model.edges = edges;
+
+                console.log(edges)
+
+
+
+
+                for (let k = 0; k < model.edges.length; k++) {
+                    let edge = model.edges[k];
+                    console.log(edge);
+
+                    for (let l = 0; l < edge.length - 1; l++) {
+                        let vertexIndex1 = edge[l];
+                        let vertexIndex2 = edge[l + 1];
+
+                        let vertex1 = model.vertices[vertexIndex1];
+                        let vertex2 = model.vertices[vertexIndex2];
+
+
+                        console.log("hi", vertex1, vertex2);
+                        //     * project to 2D
+                        let Vertex1Persp = Matrix.multiply([clone, vertex1]);
+                        let Vertex2Persp = Matrix.multiply([clone, vertex2]);
+
+                        //     * translate/scale to viewport (i.e. window)
+                        let Vertex1View = Matrix.multiply([view, Vertex1Persp]);
+                        let Vertex2View = Matrix.multiply([view, Vertex2Persp]);
+
+                        Vertex1View.x /= Vertex1View.w;
+                        Vertex1View.y /= Vertex1View.w;
+                        Vertex2View.x /= Vertex2View.w;
+                        Vertex2View.y /= Vertex2View.w;
+                        this.drawLine(Vertex1View.x, Vertex1View.y, Vertex2View.x, Vertex2View.y);
+                    }
+                }
+            }
+        }
+        */
 
 
         for (let i = 0; i < this.scene.models.length; i++) {
             let model = { type: this.scene.models[i].type }; // this valid approach?? 
             let models = this.scene.models; // contains all of the models for shortcut.
 
-            
-            /*
-            if(this.scene.models.type === 'generic'){
+
+
+            if (this.scene.models.type === 'generic') {
+
+                //check for type 
+                console.log(model)
+                for (let k = 0; k < model.edges.length; k++) {
+                    let edge = model.edges[k];
+                    console.log(edge, edge.length);
+
+                    for (let l = 0; l < edge.length - 1; l++) {
+                        let vertexIndex1 = edge[l];
+                        let vertexIndex2 = edge[l + 1];
+                        let vertex1 = model.vertices[vertexIndex1];
+                        let vertex2 = model.vertices[vertexIndex2];
+
+                        console.log(vertex1, vertexIndex1)
+
+                        console.log("hi", vertex1);
+                        //     * project to 2D
+                        let Vertex1Persp = Matrix.multiply([clone, vertex1]);
+                        let Vertex2Persp = Matrix.multiply([clone, vertex2]);
+
+                        //     * translate/scale to viewport (i.e. window)
+                        let Vertex1View = Matrix.multiply([view, Vertex1Persp]);
+                        let Vertex2View = Matrix.multiply([view, Vertex2Persp]);
+
+                        Vertex1View.x /= Vertex1View.w;
+                        Vertex1View.y /= Vertex1View.w;
+                        Vertex2View.x /= Vertex2View.w;
+                        Vertex2View.y /= Vertex2View.w;
+
+                        //     * draw line
+                        this.drawLine(Vertex1View.x, Vertex1View.y, Vertex2View.x, Vertex2View.y);
+                    }
+                }
 
             }
-            */
+
 
             if (this.scene.models[i].type === 'cube') { // could shorten to models[i].type === 
                 console.log('generating cube vertices');
 
                 // Generate vertices for the cube
-                model.vertices = []; 
+                model.vertices = [];
                 let cubeHalfWidth = this.scene.models[0].width / 2;
                 let cubeHalfHeight = this.scene.models[0].height / 2;
                 let cubeHalfDepth = this.scene.models[0].depth / 2;

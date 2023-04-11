@@ -46,7 +46,7 @@ class Renderer {
 
         // what all needs to be done here..?? 
 
-
+        // is this where vertices and such are altered for the animation? Or what? 
 
 
 
@@ -84,7 +84,6 @@ class Renderer {
         // Update the SRP coordinates in the processed scene object
         this.scene.view.srp = [finalSrpX, finalSrpY, finalSrpZ]; //DOES THIS NEED TO BE MADE INTO A VECTOR3???
 
-
     }
 
     // Right arrow pressed. Rotate SRP around the v-axis with the PRP as the origin.
@@ -118,7 +117,6 @@ class Renderer {
         // Update the SRP coordinates in the processed scene object
         this.scene.view.srp = [finalSrpX, finalSrpY, finalSrpZ]; //DOES THIS NEED TO BE MADE INTO A VECTOR3???
 
-
     }
 
     // A: translate the PRP and SRP along the u-axis.
@@ -138,7 +136,6 @@ class Renderer {
 
         // update the scene
         this.updateScene(this.scene);
-
     }
 
     // D: translate the PRP and SRP along the u-axis.
@@ -158,7 +155,6 @@ class Renderer {
 
         // update the scene
         this.updateScene(this.scene);
-
     }
 
     // S: translate the PRP and SRP along the n-axis.
@@ -175,10 +171,9 @@ class Renderer {
         // update SRP
         let srp = view.srp;
         srp[2] -= dz;
-
+        
         // update the scene
         this.updateScene(this.scene);
-
     }
 
     // W: translate the PRP and SRP along the n-axis.
@@ -198,7 +193,6 @@ class Renderer {
 
         // update the scene
         this.updateScene(this.scene);
-
     }
 
     //
@@ -228,6 +222,50 @@ class Renderer {
         //use the provided metrics of the models to generate vertices and edges for them.
 
         // think about how to go about implementing this efficiently...
+
+        // Do i want to be adding the vertices here or am I supposed to add them directly in the json file??? 
+        // I THINK THE LOGIC FOR THESE IS ALONG THE RIGHT LINES, NEED TO ENSURE STUFF IS ACCESSED AND SET PROPERLY..
+
+        let models = this.scene.models;
+        //let model = { type: scene.models[i].type }; 
+        // should i be using "model" as the var and then be pushing them to "models"?? 
+
+        // Generate vertices for the cube
+        const cubeHalfWidth = this.scene.models[0].width / 2;
+        const cubeHalfHeight = this.scene.models[0].height / 2;
+        const cubeHalfDepth = this.scene.models[0].depth / 2;
+        models[0].vertices.push(
+            [models[0].center[0] - cubeHalfWidth, models[0].center[1] - cubeHalfHeight, models[0].center[2] - cubeHalfDepth],
+            [models[0].center[0] - cubeHalfWidth, models[0].center[1] - cubeHalfHeight, models[0].center[2] + cubeHalfDepth],
+            [models[0].center[0] - cubeHalfWidth, models[0].center[1] + cubeHalfHeight, models[0].center[2] - cubeHalfDepth],
+            [models[0].center[0] - cubeHalfWidth, models[0].center[1] + cubeHalfHeight, models[0].center[2] + cubeHalfDepth],
+            [models[0].center[0] + cubeHalfWidth, models[0].center[1] - cubeHalfHeight, models[0].center[2] - cubeHalfDepth],
+            [models[0].center[0] + cubeHalfWidth, models[0].center[1] - cubeHalfHeight, models[0].center[2] + cubeHalfDepth],
+            [models[0].center[0] + cubeHalfWidth, models[0].center[1] + cubeHalfHeight, models[0].center[2] - cubeHalfDepth],
+            [models[0].center[0] + cubeHalfWidth, models[0].center[1] + cubeHalfHeight, models[0].center[2] + cubeHalfDepth]
+        );
+        // NEED TO CHECK TO SEE IF THIS WAY OF ADDING VERTICES TO THE CUBE IS CORRECT...
+
+
+        // Generate vertices for the cylinder
+        for (let i = 0; i < scene.models[1].sides; i++) {
+            const theta = i * 2 * Math.PI / models[1].sides;
+            const x = models[1].center[0] + models[1].radius * Math.cos(theta);
+            const y = models[1].center[1] + models[1].height / 2;
+            const z = models[1].center[2] + models[1].radius * Math.sin(theta);
+            models[1].vertices.push([x, y, z]);
+        }
+
+        for (let i = 0; i < models[1].sides; i++) {
+            const theta = i * 2 * Math.PI / models[1].sides;
+            const x = models[1].center[0] + models[1].radius * Math.cos(theta);
+            const y = models[1].center[1] - models[1].height / 2;
+            const z = models[1].center[2] + models[1].radius * Math.sin(theta);
+            models[1].vertices.push([x, y, z]);
+        }
+        // NEED TO CHECK TO SEE IF THIS WAY OF ADDING VERTICES TO THE CYLINDER IS CORRECT...
+
+        console.log({ view, models }); // using to check the values of the view/models.
 
 
     }

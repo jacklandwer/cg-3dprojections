@@ -144,18 +144,22 @@ function mat4x4Translate(mat4x4, tx, ty, tz) {
     mat4x4.values[1] = 0;
     mat4x4.values[2] = 0;
     mat4x4.values[3] = 0;
+
     mat4x4.values[4] = 0;
     mat4x4.values[5] = 1;
     mat4x4.values[6] = 0;
     mat4x4.values[7] = 0;
+
     mat4x4.values[8] = 0;
     mat4x4.values[9] = 0;
     mat4x4.values[10] = 1;
     mat4x4.values[11] = 0;
+
     mat4x4.values[12] = tx;
     mat4x4.values[13] = ty;
     mat4x4.values[14] = tz;
     mat4x4.values[15] = 1;
+
     return mat4x4;
     // CHECK TO SEE IF THIS IS CORRECT...
 }
@@ -168,18 +172,22 @@ function mat4x4Scale(mat4x4, sx, sy, sz) {
     mat4x4.values[1] = 0;
     mat4x4.values[2] = 0;
     mat4x4.values[3] = 0;
+
     mat4x4.values[4] = 0;
     mat4x4.values[5] = sy;
     mat4x4.values[6] = 0;
     mat4x4.values[7] = 0;
+
     mat4x4.values[8] = 0;
     mat4x4.values[9] = 0;
     mat4x4.values[10] = sz;
     mat4x4.values[11] = 0;
+
     mat4x4.values[12] = 0;
     mat4x4.values[13] = 0;
     mat4x4.values[14] = 0;
     mat4x4.values[15] = 1;
+
     return mat4x4;
     // CHECK TO SEE IF THIS IS CORRECT...
 
@@ -191,22 +199,27 @@ function mat4x4RotateX(mat4x4, theta) {
 
     let c = Math.cos(theta);
     let s = Math.sin(theta);
+
     mat4x4.values[0] = 1;
     mat4x4.values[1] = 0;
     mat4x4.values[2] = 0;
     mat4x4.values[3] = 0;
+
     mat4x4.values[4] = 0;
     mat4x4.values[5] = c;
     mat4x4.values[6] = s;
     mat4x4.values[7] = 0;
+
     mat4x4.values[8] = 0;
     mat4x4.values[9] = -s;
     mat4x4.values[10] = c;
     mat4x4.values[11] = 0;
+
     mat4x4.values[12] = 0;
     mat4x4.values[13] = 0;
     mat4x4.values[14] = 0;
     mat4x4.values[15] = 1;
+
     return mat4x4;
     // CHECK TO SEE IF THIS IS CORRECT...
 
@@ -218,22 +231,27 @@ function mat4x4RotateY(mat4x4, theta) {
 
     let c = Math.cos(theta);
     let s = Math.sin(theta);
+
     mat4x4.values[0] = c;
     mat4x4.values[1] = 0;
     mat4x4.values[2] = -s;
     mat4x4.values[3] = 0;
+
     mat4x4.values[4] = 0;
     mat4x4.values[5] = 1;
     mat4x4.values[6] = 0;
     mat4x4.values[7] = 0;
+
     mat4x4.values[8] = s;
     mat4x4.values[9] = 0;
     mat4x4.values[10] = c;
     mat4x4.values[11] = 0;
+
     mat4x4.values[12] = 0;
     mat4x4.values[13] = 0;
     mat4x4.values[14] = 0;
     mat4x4.values[15] = 1;
+
     return mat4x4;
     // CHECK TO SEE IF THIS IS CORRECT...
 
@@ -245,22 +263,27 @@ function mat4x4RotateZ(mat4x4, theta) {
 
     let c = Math.cos(theta);
     let s = Math.sin(theta);
+
     mat4x4.values[0] = c;
     mat4x4.values[1] = -s;
     mat4x4.values[2] = 0;
     mat4x4.values[3] = 0;
+
     mat4x4.values[4] = s;
     mat4x4.values[5] = c;
     mat4x4.values[6] = 0;
     mat4x4.values[7] = 0;
+
     mat4x4.values[8] = 0;
     mat4x4.values[9] = 0;
     mat4x4.values[10] = 1;
     mat4x4.values[11] = 0;
+
     mat4x4.values[12] = 0;
     mat4x4.values[13] = 0;
     mat4x4.values[14] = 0;
     mat4x4.values[15] = 1;
+
     return mat4x4;
     // CHECK TO SEE IF THIS IS CORRECT...
 
@@ -274,18 +297,22 @@ function mat4x4ShearXY(mat4x4, shx, shy) {
     mat4x4.values[1] = shx;
     mat4x4.values[2] = 0;
     mat4x4.values[3] = 0;
+
     mat4x4.values[4] = shy;
     mat4x4.values[5] = 1;
     mat4x4.values[6] = 0;
     mat4x4.values[7] = 0;
+
     mat4x4.values[8] = 0;
     mat4x4.values[9] = 0;
     mat4x4.values[10] = 1;
     mat4x4.values[11] = 0;
+
     mat4x4.values[12] = 0;
     mat4x4.values[13] = 0;
     mat4x4.values[14] = 0;
     mat4x4.values[15] = 1;
+    
     return mat4x4;
     // CHECK TO SEE IF THIS IS CORRECT...
 

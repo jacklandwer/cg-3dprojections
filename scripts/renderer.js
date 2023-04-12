@@ -1,9 +1,9 @@
-const LEFT =   32; // binary 100000
-const RIGHT =  16; // binary 010000
+const LEFT = 32; // binary 100000
+const RIGHT = 16; // binary 010000
 const BOTTOM = 8;  // binary 001000
-const TOP =    4;  // binary 000100
-const FAR =    2;  // binary 000010
-const NEAR =   1;  // binary 000001
+const TOP = 4;  // binary 000100
+const FAR = 2;  // binary 000010
+const NEAR = 1;  // binary 000001
 const FLOAT_EPSILON = 0.000001;
 
 class Renderer {
@@ -18,271 +18,260 @@ class Renderer {
         this.enable_animation = true;  // <-- disabled for easier debugging; enable for animation
         this.start_time = null;
         this.prev_time = null;
-    
 
 
-    window.addEventListener('keydown', (event) => {
-        if (event.key === 'ArrowLeft') { //rotate left
-            this.rotateLeft();
-        } else if (event.key === 'ArrowRight') { //rotate right
-            this.rotateRight();
-        } else if (event.key === 'A') { //move left
-            this.moveLeft();
-        } else if (event.key === 'D') { //move right
-            this.moveRight();
-        } else if (event.key === 'S') { //move backwards
-            this.moveBackward();
-        } else if (event.key === 'W') { //move forward
-            this.moveForward();
-        }
-    });
-}
+        window.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowLeft') {
+                this.rotateLeft();
+            } else if (event.key === 'ArrowRight') {
+                this.rotateRight();
+            } else if (event.key === 'A') {
+                this.moveLeft();
+            } else if (event.key === 'D') {
+                this.moveRight();
+            } else if (event.key === 'S') {
+                this.moveBackward();
+            } else if (event.key === 'W') {
+                this.moveForward();
+            }
+        });
+    }
 
 
-
-
-
-//
+    //
     updateTransforms(time, delta_time) {
-    // TODO: update any transformations needed for animation
+        // update any transformations needed for animation
 
-    // what all needs to be done here..?? 
+        for (let i = 0; i < this.scene.models.length; i++) {
+            let model = this.scene.models[i];
 
-    // is this where vertices and such are altered for the animation? Or what? 
-    /*
+            if (model.animation) {
+                // Get the axis of rotation and the rotations per second
+                let axis = model.animation.axis;
+                let rps = model.animation.rps;
 
-    How can I use time and delta time to create the animation, along with matrix functions arlready capable of of applying rotation to the respective axis, keep in mind this is for 3D so they should rotate about the center
-    Rotation can be in the x, y, or z axis
-    Animating models should rotate about their own center
+                // Calculate the angle of rotation based on time and the desired rotations per second
+                let angle = time * rps * 2 * Math.PI;
 
+                let matrix = model.matrix;
+                console.log(model, matrix);
 
-    Rotation speed defined in terms of revolutions per second
-    */
-   if(this.scene.models.type=== "cylinder")
-   {
-
-    let animation = this.scene.models.animation;
-    if (!animation) return;
-  
-    // Calculate the angle of rotation for the given time frame based on the revolutions per second
-    let revolutions = animation.rps * time;
-    let angle = (2 * Math.PI * revolutions) % (2 * Math.PI);
-  
-    // Create the rotation matrix using the calculated angle
-    let rot = new Matrix(4,4)
-    let rotationMatrix = mat4x4RotateY(rot, angle);
+                if (model.vertices) {
 
 
-  
-    // Apply the rotation to the model's transformation matrix
-    this.model.transform = Matrix.multiply(this.model.transform, rotationMatrix);
+                    for (let k = 0; k < model.vertices.length; k++) {
+                        //let curVerts = model.vertices[i];
 
-    
-   }
-    
+                        // Create a rotation matrix based on the angle and axis of rotation
+
+                        switch (axis) {
+                            case "x":
+                                mat4x4RotateX(matrix, angle);
+                                break;
+                            case "y":
+                                mat4x4RotateY(matrix, angle);
+                                break;
+                            case "z":
+                                mat4x4RotateZ(matrix, angle);
+                                break;
+                            default:
+                                console.error("Invalid axis of rotation for animation");
+                                return;
+                        }
+
+                    }
+                }
 
 
+                // TRY TO SEE IF CAN COMBINE THIS APPROACH TO GET THIS TO WORK...
+                /*
+                for (let i = 0; i < this.scene.models.length; i++) {
+                    let model = this.scene.models[i];
+                    let vertices = model.vertices;
+            
+                    // Translate the model to its world position
+                    let translationMatrix = mat4x4Translate(model.worldPosition.x, model.worldPosition.y, model.worldPosition.z);
+                    for (let j = 0; j < vertices.length; j++) {
+                        vertices[j] = mat4x4MultiplyVector(translationMatrix, vertices[j]);
+                    }
+            
+                    // Rotate the model around its world axis
+                    let rotationMatrix = mat4x4Rotate(model.worldAxis, model.worldAngle);
+                    for (let j = 0; j < vertices.length; j++) {
+                        vertices[j] = mat4x4MultiplyVector(rotationMatrix, vertices[j]);
+                    }
+            
+                    // Scale the model
+                    let scaleMatrix = mat4x4Scale(model.scale.x, model.scale.y, model.scale.z);
+                    for (let j = 0; j < vertices.length; j++) {
+                        vertices[j] = mat4x4MultiplyVector(scaleMatrix, vertices[j]);
+                    }
+            
+                    // Apply perspective and viewport transformations
+                    let PRP = this.scene.view.prp;
+                    let SRP = this.scene.view.srp;
+                    let VUP = this.scene.view.vup;
+                    let Clip = this.scene.view.clip;
+                    let perspectiveMatrix = mat4x4Perspective(PRP, SRP, VUP, Clip);
+                    let viewportMatrix = mat4x4Viewport(this.canvas.width, this.canvas.height);
+                    for (let j = 0; j < vertices.length; j++) {
+                        vertices[j] = mat4x4MultiplyVector(perspectiveMatrix, vertices[j]);
+                        vertices[j] = mat4x4MultiplyVector(viewportMatrix, vertices[j]);
+                    }
+                }
+                */
+            }
+           
+            
+            
+            
+            
+            
+            
+
+            
+
+        }
+
+    }
 
 
+    // Left arrow pressed. Rotate SRP around the v-axis with the PRP as the origin.
+    rotateLeft() {
+        let angle = -Math.PI / 90;
+        // Get the current SRP coordinates 
+        let srp = this.scene.view.srp;
+        let srpX = srp.x;
+        let srpY = srp.y;
+        let srpZ = srp.z;
+        // Translate the SRP coordinates to the origin
+        let prp = this.scene.view.prp;
+        let newSrpX = srpX - prp.x;
+        let newSrpY = srpY - prp.y;
+        let newSrpZ = srpZ - prp.z;
+        // Rotate the SRP around the v-axis
+        let rotatedSrpX = newSrpX * Math.cos(angle) + newSrpZ * Math.sin(angle);
+        let rotatedSrpY = newSrpY;
+        let rotatedSrpZ = newSrpZ * Math.cos(angle) - newSrpX * Math.sin(angle);
+        // Translate the rotated SRP coordinates back to the original position
+        let finalSrpX = rotatedSrpX + prp.x;
+        let finalSrpY = rotatedSrpY + prp.y;
+        let finalSrpZ = rotatedSrpZ + prp.z;
+        // Update the SRP coordinates.
+        this.scene.view.srp = Vector3(finalSrpX, finalSrpY, finalSrpZ);
+        this.draw()
+    }
 
-}
+    // Right arrow pressed. Rotate SRP around the v-axis with the PRP as the origin.
+    rotateRight() {
+        let angle = Math.PI / 90;
+        // Get the current SRP coordinates
+        let srp = this.scene.view.srp;
+        let srpX = srp.x;
+        let srpY = srp.y;
+        let srpZ = srp.z;
+        // Translate the SRP coordinates to the origin
+        let prp = this.scene.view.prp;
+        let newSrpX = srpX - prp.x;
+        let newSrpY = srpY - prp.y;
+        let newSrpZ = srpZ - prp.z;
+        // Rotate the SRP around the v-axis
+        let rotatedSrpX = newSrpX * Math.cos(angle) + newSrpZ * Math.sin(angle);
+        let rotatedSrpY = newSrpY;
+        let rotatedSrpZ = newSrpZ * Math.cos(angle) - newSrpX * Math.sin(angle);
+        // Translate the rotated SRP coordinates back to the original position
+        let finalSrpX = rotatedSrpX + prp.x;
+        let finalSrpY = rotatedSrpY + prp.y;
+        let finalSrpZ = rotatedSrpZ + prp.z;
+        // Update the SRP coordinates.
+        this.scene.view.srp = Vector3(finalSrpX, finalSrpY, finalSrpZ);
+        this.draw()
+    }
 
+    // A: translate the PRP and SRP along the u-axis.
+    moveLeft() {
+        let dx = 1; // the amount to move to the left. 
+        let view = this.scene.view;
+        // update PRP
+        let prp = view.prp;
+        prp.x += dx;
+        // update SRP
+        let srp = view.srp;
+        srp.x += dx;
+        // update the scene
+        this.draw();
+    }
 
-// Left arrow pressed. Rotate SRP around the v-axis with the PRP as the origin.
-rotateLeft() {
-    console.log("rotating left", this.scene.view.srp);
+    // D: translate the PRP and SRP along the u-axis.
+    moveRight() {
+        let dx = 1; // the amount to move to the right.
+        let view = this.scene.view;
+        // update PRP
+        let prp = view.prp;
+        prp.x -= dx;
+        // update SRP
+        let srp = view.srp;
+        srp.x -= dx;
+        // update the scene
+        this.draw()
+    }
 
-    let angle = Math.PI / 90; // can adjust this angle.
+    // S: translate the PRP and SRP along the n-axis.
+    moveBackward() {
+        let dz = 1; // the amount to move backwards.
+        let view = this.scene.view;
+        // update PRP
+        let prp = view.prp;
+        prp.z += dz;
+        // update SRP
+        let srp = view.srp;
+        srp.z += dz;
+        // update the scene
+        this.draw();
+    }
 
-    // Get the current SRP coordinates 
-    let srp = this.scene.view.srp;
-    let srpX = srp.x;
-    let srpY = srp.y;
-    let srpZ = srp.z;
+    // W: translate the PRP and SRP along the n-axis.
+    moveForward() {
+        let dz = 1; // the amount to move forwards.
+        let view = this.scene.view;
+        // update PRP
+        let prp = view.prp;
+        prp.z -= dz;
+        // update SRP
+        let srp = view.srp;
+        srp.z -= dz;
+        // update the scene
+        this.draw();
+    }
 
-    // Translate the SRP coordinates to the origin
-    let prp = this.scene.view.prp; // SRP-PRP
-    let newSrpX = srpX - prp.x;
-    let newSrpY = srpY - prp.y;
-    let newSrpZ = srpZ - prp.z;
-
-    // Rotate the SRP around the v-axis
-    let rotatedSrpX = newSrpX * Math.cos(angle) + newSrpZ * Math.sin(angle);
-    let rotatedSrpY = newSrpY;
-    let rotatedSrpZ = newSrpZ * Math.cos(angle) - newSrpX * Math.sin(angle);
-
-    // Translate the rotated SRP coordinates back to the original position
-    let finalSrpX = rotatedSrpX + prp.x;
-    let finalSrpY = rotatedSrpY + prp.y;
-    let finalSrpZ = rotatedSrpZ + prp.z;
-
-    // Update the SRP coordinates in the processed scene object
-
-    this.scene.view.srp = Vector3(finalSrpX, finalSrpY, finalSrpZ); //DOES THIS NEED TO BE MADE INTO A VECTOR3???
-    console.log("END", this.scene.view.srp)
-
-    this.draw()
-
-    //srp: Vector3(scene.view.srp[0], scene.view.srp[1], scene.view.srp[2]),
-
-}
-
-// Right arrow pressed. Rotate SRP around the v-axis with the PRP as the origin.
-rotateRight() {
-    console.log('rotating right');
-
-    let angle = -Math.PI / 90; // Negative angle to rotate right
-
-    // Get the current SRP coordinates
-    let srp = this.scene.view.srp;
-    let srpX = srp.x;
-    let srpY = srp.y;
-    let srpZ = srp.z;
-
-    // Translate the SRP coordinates to the origin
-    let prp = this.scene.view.prp;
-    let newSrpX = srpX - prp.x;
-    let newSrpY = srpY - prp.y;
-    let newSrpZ = srpZ - prp.z;
-
-    // Rotate the SRP around the v-axis
-    let rotatedSrpX = newSrpX * Math.cos(angle) + newSrpZ * Math.sin(angle);
-    let rotatedSrpY = newSrpY;
-    let rotatedSrpZ = newSrpZ * Math.cos(angle) - newSrpX * Math.sin(angle);
-
-    // Translate the rotated SRP coordinates back to the original position
-    let finalSrpX = rotatedSrpX + prp.x;
-    let finalSrpY = rotatedSrpY + prp.y;
-    let finalSrpZ = rotatedSrpZ + prp.z;
-
-    // Update the SRP coordinates in the processed scene object
-    this.scene.view.srp = Vector3(finalSrpX, finalSrpY, finalSrpZ); //DOES THIS NEED TO BE MADE INTO A VECTOR3???
-    this.draw()
-    //srp: Vector3(scene.view.srp[0], scene.view.srp[1], scene.view.srp[2]),
-
-}
-
-// A: translate the PRP and SRP along the u-axis.
-moveLeft() {
-    console.log('moving left');
-
-    let dx = 1; // the amount to move to the left. CAN CHANGE ACCORDINGLY.
-    let view  = this.scene.view;
-
-    // update PRP
-    let prp = view.prp;
-    prp.x += dx;
-
-    // update SRP
-    let srp = view.srp;
-    srp.x += dx;
-
-    // update the scene
-    this.draw();
-}
-
-// D: translate the PRP and SRP along the u-axis.
-moveRight() {
-    console.log('moving right');
-
-    let dx = 1; // the amount to move to the right. CAN CHANGE ACCORDINGLY.
-    let view  = this.scene.view;
-
-    // update PRP
-    let prp = view.prp;
-    prp.x -= dx;
-
-    // update SRP
-    let srp = view.srp;
-    srp.x -= dx;
-
-    // update the scene
-    this.draw()
-}
-
-// S: translate the PRP and SRP along the n-axis.
-moveBackward() {
-    console.log('moving backwards');
-
-    let dz = 1; // the amount to move backwards. CAN CHANGE ACCORDINGLY.
-    let view = this.scene.view;
-
-    // update PRP
-    let prp = view.prp;
-    prp.z += dz;
-
-    // update SRP
-    let srp = view.srp;
-    srp.z += dz;
-
-    // update the scene
-    this.draw();
-}
-
-// W: translate the PRP and SRP along the n-axis.
-moveForward() {
-    console.log('moving forwards');
-
-    let dz = 1; // the amount to move forwards. CAN CHANGE ACCORDINGLY.
-    let  view = this.scene.view;
-
-    // update PRP
-    let prp = view.prp;
-    prp.z -= dz;
-
-    // update SRP
-    let srp = view.srp;
-    srp.z -= dz;
-
-    // update the scene
-    this.draw();
-}
     //
     draw() {
-       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-
-       let PRP = this.scene.view.prp;
-       let SRP = this.scene.view.srp;
-       let VUP = this.scene.view.vup;
-
-       //translate in the future for vector 4 to get them for the buttons. 
-
-
-       let Clip = this.scene.view.clip;
-
-       let clone = mat4x4Perspective(PRP,SRP,VUP,Clip);
-        console.log('draw()' );
-
-       
-        console.log(this.scene.view)
-        //console.log(this.scene.models[0].vertices[0])
-        let ob = new Matrix(4,4)
-
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        let PRP = this.scene.view.prp;
+        let SRP = this.scene.view.srp;
+        let VUP = this.scene.view.vup;
+        let Clip = this.scene.view.clip;
+        let clone = mat4x4Perspective(PRP, SRP, VUP, Clip);
         let view = mat4x4Viewport(this.canvas.width, this.canvas.height);
-        for(let i =0; i<this.scene.models.length; i++)
-        {
-            let model = this.scene.models[i]; 
-            console.log(model)
+
+        for (let i = 0; i < this.scene.models.length; i++) {
+            let model = this.scene.models[i];
 
             if (model.type === 'cube') {
-                console.log('generating cube vertices');
-
                 // Generate vertices for the cube
-                model.vertices = []; //Cannot set properties of undefined (setting 'vertices')
+                model.vertices = [];
                 let cubeHalfWidth = model.width / 2;
                 let cubeHalfHeight = model.height / 2;
                 let cubeHalfDepth = model.depth / 2;
-                model.vertices = [  Vector4(model.center.x - cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z - cubeHalfDepth, 1),
-                                    Vector4(model.center.x - cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z + cubeHalfDepth, 1),
-                                    Vector4(model.center.x - cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z - cubeHalfDepth, 1),
-                                    Vector4(model.center.x - cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z + cubeHalfDepth, 1),
-                                    Vector4(model.center.x + cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z - cubeHalfDepth, 1),
-                                    Vector4(model.center.x + cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z + cubeHalfDepth, 1),
-                                    Vector4(model.center.x + cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z - cubeHalfDepth, 1),
-                                    Vector4(model.center.x + cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z + cubeHalfDepth, 1)];
-                
-                console.log(model)
+                model.vertices = [Vector4(model.center.x - cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z - cubeHalfDepth, model.center.w),
+                Vector4(model.center.x - cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z + cubeHalfDepth, model.center.w),
+                Vector4(model.center.x - cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z - cubeHalfDepth, model.center.w),
+                Vector4(model.center.x - cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z + cubeHalfDepth, model.center.w),
+                Vector4(model.center.x + cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z - cubeHalfDepth, model.center.w),
+                Vector4(model.center.x + cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z + cubeHalfDepth, model.center.w),
+                Vector4(model.center.x + cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z - cubeHalfDepth, model.center.w),
+                Vector4(model.center.x + cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z + cubeHalfDepth, model.center.w)];
+
                 let edges = [
                     [0, 1, 3, 2, 0], // Bottom face
                     [4, 5, 7, 6, 4], // Top face
@@ -290,77 +279,48 @@ moveForward() {
                     [1, 5],
                     [2, 6],
                     [3, 7],
-                  ];
-                // Add the edges to the model object
+                ];
                 model.edges = edges;
-
-                console.log(edges)
-            }     
-            if(model.type === "generic")
-            {
-                console.log("DO nothing")
-
             }
-            if (model.type === 'sphere') 
-            {
-        
-                console.log('generating sphere vertices');
 
+            if (model.type === 'cone') {
+                //generate cone vertices.
                 model.vertices = [];
-                let PI = Math.PI;
-                let TWO_PI = 2 * PI;
-                let deltaPhi = PI / model.stacks;
-                let deltaTheta = TWO_PI / model.slices;
-
-                for (let k = 0; k <= model.stacks; k++) {
-                    let phi = k * deltaPhi;
-                    let sinPhi = Math.sin(phi);
-                    let cosPhi = Math.cos(phi);
-
-                    for (let j = 0; j <= model.slices; j++) {
-                        let theta = j * deltaTheta;
-                        let sinTheta = Math.sin(theta);
-                        let cosTheta = Math.cos(theta);
-
-                        let x = model.center.x + (model.radius * sinPhi * cosTheta);
-                        let y = model.center.y + (model.radius * sinPhi * sinTheta);
-                        let z = model.center.z + (model.radius * cosPhi);
-
-                        model.vertices.push(Vector4(x, y, z, model.center.w));
-                    }
+                let TWO_PI = 2 * Math.PI;
+                let deltaTheta = TWO_PI / model.sides;
+                let halfHeight = model.height / 2;
+                // Create the base of the cone
+                for (let k = 0; k < model.sides; k++) {
+                    let theta = k * deltaTheta;
+                    let x = model.center.x + (model.radius * Math.cos(theta));
+                    let z = model.center.z + (model.radius * Math.sin(theta));
+                    model.vertices.push(Vector4(x, model.center.y - halfHeight, z, model.center.w));
+                }
+                // Create the tip of the cone
+                model.vertices.push(Vector4(model.center.x, model.center.y + halfHeight, model.center.z, model.center.w));
+                // Create the sides of the cone
+                for (let k = 0; k < model.sides; k++) {
+                    let theta = k * deltaTheta;
+                    let x = model.center.x + (model.radius * Math.cos(theta));
+                    let z = model.center.z + (model.radius * Math.sin(theta));
+                    model.vertices.push(Vector4(x, model.center.y - halfHeight, z, model.center.w));
+                    model.vertices.push(Vector4(model.center.x, model.center.y + halfHeight, model.center.z, model.center.w));
                 }
 
-
-                 model.edges = [];
-                 for (let k = 0; k < model.stacks; k++) 
-                 {
-                    for (let j = 0; j < model.slices; j++) 
-                    {
-                        let p1 = k * (model.slices + 1) + j;
-                        let p2 = p1 + 1;
-                        let p3 = (k + 1) * (model.slices + 1) + j;
-                        let p4 = p3 + 1;
-
-                        model.edges.push([p1, p2]);
-                        model.edges.push([p1, p3]);
-                    if (k !== model.stacks - 1) 
-                        {
-                         model.edges.push([p3, p4]);
-                        }
-                    if (j !== model.slices - 1) 
-                        {
-                          model.edges.push([p2, p4]);
-                        }
-                    }
+                model.edges = []
+                for (let k = 0; k < model.sides; k++) {
+                    model.edges.push([k, model.vertices.length - 1]);
                 }
 
-            }   
+                // Connect the vertices on the base with each other
+                for (let k = 0; k < model.sides; k++) {
+                    let vertexIndex1 = k;
+                    let vertexIndex2 = (k + 1) % model.sides;
+                    model.edges.push([vertexIndex1, vertexIndex2]);
+                }
+            }
 
-
-            
             if (model.type === 'cylinder') {
-                console.log('generating cylinder vertices');
-
                 // Generate vertices for the cylinder
                 model.vertices = [];
                 for (let k = 0; k < model.sides; k++) {
@@ -388,101 +348,76 @@ moveForward() {
                     model.edges.push([i1, i2]);
                     model.edges.push([i3, i4]);
                     model.edges.push([i1, i3]);
-    }
-
-
+                }
             }
 
-            if (model.type === 'cone') {
-                console.log('generating cone vertices');
-
+            if (model.type === 'sphere') {
+                //generate sphere vertices.
                 model.vertices = [];
-                let TWO_PI = 2 * Math.PI;
-                let deltaTheta = TWO_PI / model.sides;
-                let halfHeight = model.height / 2;
+                let PI = Math.PI;
+                let TWO_PI = 2 * PI;
+                let deltaPhi = PI / model.stacks;
+                let deltaTheta = TWO_PI / model.slices;
 
-                // Create the base of the cone
-                for (let k = 0; k < model.sides; k++) {
-                    let theta = k * deltaTheta;
-                    let x = model.center.x + (model.radius * Math.cos(theta));
-                    let z = model.center.z + (model.radius * Math.sin(theta));
+                for (let k = 0; k <= model.stacks; k++) {
+                    let phi = k * deltaPhi;
+                    let sinPhi = Math.sin(phi);
+                    let cosPhi = Math.cos(phi);
 
-                    model.vertices.push(Vector4(x, model.center.y - halfHeight, z, model.center.w));
+                    for (let j = 0; j <= model.slices; j++) {
+                        let theta = j * deltaTheta;
+                        let sinTheta = Math.sin(theta);
+                        let cosTheta = Math.cos(theta);
+                        let x = model.center.x + (model.radius * sinPhi * cosTheta);
+                        let y = model.center.y + (model.radius * sinPhi * sinTheta);
+                        let z = model.center.z + (model.radius * cosPhi);
+                        model.vertices.push(Vector4(x, y, z, model.center.w));
+                    }
                 }
 
-                // Create the tip of the cone
-                model.vertices.push(Vector4(model.center.x, model.center.y + halfHeight, model.center.z, model.center.w));
-
-                // Create the sides of the cone
-                for (let k = 0; k < model.sides; k++) {
-                    let theta = k * deltaTheta;
-                    let x = model.center.x + (model.radius * Math.cos(theta));
-                    let z = model.center.z + (model.radius * Math.sin(theta));
-
-                    model.vertices.push(Vector4(x, model.center.y - halfHeight, z, model.center.w));
-                    model.vertices.push(Vector4(model.center.x, model.center.y + halfHeight, model.center.z, model.center.w));
+                model.edges = [];
+                for (let k = 0; k < model.stacks; k++) {
+                    for (let j = 0; j < model.slices; j++) {
+                        let p1 = k * (model.slices + 1) + j;
+                        let p2 = p1 + 1;
+                        let p3 = (k + 1) * (model.slices + 1) + j;
+                        let p4 = p3 + 1;
+                        model.edges.push([p1, p2]);
+                        model.edges.push([p1, p3]);
+                        if (k !== model.stacks - 1) {
+                            model.edges.push([p3, p4]);
+                        }
+                        if (j !== model.slices - 1) {
+                            model.edges.push([p2, p4]);
+                        }
+                    }
                 }
-
-
-                model.edges = []
-                for (let k = 0; k < model.sides; k++) {
-                    model.edges.push([k, model.vertices.length - 1]);
-                }
-            
-                // Connect the vertices on the base with each other
-                for (let k = 0; k < model.sides; k++) {
-                    let vertexIndex1 = k;
-                    let vertexIndex2 = (k + 1) % model.sides;
-                    model.edges.push([vertexIndex1, vertexIndex2]);
-                }
-
             }
-                console.log(model)
-                 for (let k = 0; k<model.edges.length; k++)
-                {
-                     let edge = model.edges[k];
-                     console.log(edge, edge.length);
-                
-                     for(let l = 0; l<edge.length-1; l++)
-                     {   
-                        let vertexIndex1 = edge[l];
-                        let vertexIndex2 = edge[l + 1];
-                        let vertex1 = model.vertices[vertexIndex1];
-                        let vertex2 = model.vertices[vertexIndex2];
 
-                        console.log(vertex1, vertexIndex1)
-
-                        console.log("hi", vertex1);
-                        //     * project to 2D
-                        let Vertex1Persp = Matrix.multiply([clone, vertex1]);
-                        let Vertex2Persp = Matrix.multiply([clone, vertex2]);
-
-                    //     * translate/scale to viewport (i.e. window)
-                        let Vertex1View = Matrix.multiply([view, Vertex1Persp]);
-                        let Vertex2View = Matrix.multiply([view, Vertex2Persp]);
-
-                        Vertex1View.x /= Vertex1View.w;
-                        Vertex1View.y /= Vertex1View.w;
-                        Vertex2View.x /= Vertex2View.w;
-                        Vertex2View.y /= Vertex2View.w;
-
-                    //     * draw line
-                        this.drawLine(Vertex1View.x, Vertex1View.y, Vertex2View.x, Vertex2View.y);
+            // edges and drawing lines.
+            for (let k = 0; k < model.edges.length; k++) {
+                let edge = model.edges[k];
+                for (let l = 0; l < edge.length - 1; l++) {
+                    let vertexIndex1 = edge[l];
+                    let vertexIndex2 = edge[l + 1];
+                    let vertex1 = model.vertices[vertexIndex1];
+                    let vertex2 = model.vertices[vertexIndex2];
+                    //project to 2D
+                    let Vertex1Persp = Matrix.multiply([clone, vertex1]);
+                    let Vertex2Persp = Matrix.multiply([clone, vertex2]);
+                    //translate/scale to viewport (i.e. window)
+                    let Vertex1View = Matrix.multiply([view, Vertex1Persp]);
+                    let Vertex2View = Matrix.multiply([view, Vertex2Persp]);
+                    Vertex1View.x /= Vertex1View.w;
+                    Vertex1View.y /= Vertex1View.w;
+                    Vertex2View.x /= Vertex2View.w;
+                    Vertex2View.y /= Vertex2View.w;
+                    //draw line
+                    this.drawLine(Vertex1View.x, Vertex1View.y, Vertex2View.x, Vertex2View.y);
                 }
             }
         }
     }
-
-        
-         // TODO: implement drawing here!
-        //For each model
-        //   * For each vertex
-        //     * transform endpoints to canonical view volume
-        //   * For each line segment in each edge
-        //     * clip in 3D
-        //     * project to 2D
-        //     * translate/scale to viewport (i.e. window)
-        //     * draw line
 
     // Get outcode for a vertex
     // vertex:       Vector4 (transformed vertex in homogeneous coordinates)
@@ -516,13 +451,70 @@ moveForward() {
     // z_min:        float (near clipping plane in canonical view volume)
     clipLinePerspective(line, z_min) {
         let result = null;
-        let p0 = Vector3(line.pt0.x, line.pt0.y, line.pt0.z); 
+        let p0 = Vector3(line.pt0.x, line.pt0.y, line.pt0.z);
         let p1 = Vector3(line.pt1.x, line.pt1.y, line.pt1.z);
         let out0 = this.outcodePerspective(p0, z_min);
         let out1 = this.outcodePerspective(p1, z_min);
-        
-        // TODO: implement clipping here!
-        
+
+        // check if line is completely outside view volume
+        if ((out0 & out1) !== 0) {
+            return null;
+        }
+
+        // clip against each view volume plane
+        while (out0 !== 0 || out1 !== 0) {
+            // is this condition still needed here if its being checked before the while loop???
+            if ((out0 & out1) !== 0) { // the line segment is completely outside the plane
+                return null;
+            }
+
+            let out = (out0 !== 0) ? out0 : out1;
+            let p = (out0 !== 0) ? p0 : p1;
+
+            // DO I WANT TO USE THE CONSTANTS FOR LEFT/RIGHT/TOP/BOTTOM???
+            // MAKE SURE THE CLIPPING ORDER IS CORRECT TOO...
+            const LEFT = 32; // binary 100000
+            const RIGHT = 16; // binary 010000
+            const BOTTOM = 8;  // binary 001000
+            const TOP = 4;  // binary 000100
+            const FAR = 2;  // binary 000010
+            const NEAR = 1;  // binary 000001
+
+            if ((out & NEAR) !== 0) { // 1. clip against left plane
+                let t = (z_min - p.x) / (p1.x - p0.x);
+                p = p0 + (p1 - p0) * t;
+            } else if ((out & RIGHT) !== 0) { // 2. clip against right plane
+                let t = (p.x - z_min) / (p0.x - p1.x);
+                p = p1 + (p0 - p1) * t;
+            } else if ((out & BOTTOM) !== 0) { // 4. clip against bottom plane
+                let t = (z_min - p.y) / (p1.y - p0.y);
+                p = p0 + (p1 - p0) * t;
+            } else if ((out & TOP) !== 0) { // 8. clip against top plane
+                let t = (p.y - z_min) / (p0.y - p1.y);
+                p = p1 + (p0 - p1) * t;
+            } else if ((out & NEAR) !== 0) { // 16. clip against near plane
+                let t = (z_min - p.z) / (p1.z - p0.z);
+                p = p0 + (p1 - p0) * t;
+            } else if ((out & FAR) !== 0) { // 32. clip against far plane
+                let t = (1 - p.z) / (p0.z - p1.z);
+                p = p1 + (p0 - p1) * t;
+            }
+
+            if (out === out0) {
+                p0 = p;
+                out0 = this.outcodePerspective(p0, z_min);
+            } else {
+                p1 = p;
+                out1 = this.outcodePerspective(p1, z_min);
+            }
+        }
+
+        // line segment is partially or completely inside the view volume
+        result = {
+            pt0: new Vector4(p0.x, p0.y, p0.z, line.pt0.w),
+            pt1: new Vector4(p1.x, p1.y, p1.z, line.pt1.w)
+        };
+
         return result;
     }
     //
@@ -570,7 +562,7 @@ moveForward() {
                 clip: [...scene.view.clip]
             },
             models: []
-        };  
+        };
 
         for (let i = 0; i < scene.models.length; i++) {
             let model = { type: scene.models[i].type };
@@ -579,20 +571,20 @@ moveForward() {
                 model.edges = JSON.parse(JSON.stringify(scene.models[i].edges));
                 for (let j = 0; j < scene.models[i].vertices.length; j++) {
                     model.vertices.push(Vector4(scene.models[i].vertices[j][0],
-                                                scene.models[i].vertices[j][1],
-                                                scene.models[i].vertices[j][2], 1));
-                
+                        scene.models[i].vertices[j][1],
+                        scene.models[i].vertices[j][2], 1));
+
                     if (scene.models[i].hasOwnProperty('animation')) {
                         model.animation = JSON.parse(JSON.stringify(scene.models[i].animation));
-                        
+
                     }
                 }
             }
             else {
                 model.center = Vector4(scene.models[i].center[0],
-                                       scene.models[i].center[1],
-                                       scene.models[i].center[2],
-                                       1);
+                    scene.models[i].center[1],
+                    scene.models[i].center[2],
+                    1);
                 for (let key in scene.models[i]) {
                     if (scene.models[i].hasOwnProperty(key) && key !== 'type' && key != 'center') {
                         model[key] = JSON.parse(JSON.stringify(scene.models[i][key]));
@@ -605,7 +597,7 @@ moveForward() {
 
         return processed;
     }
-    
+
     // x0:           float (x coordinate of p0)
     // y0:           float (y coordinate of p0)
     // x1:           float (x coordinate of p1)

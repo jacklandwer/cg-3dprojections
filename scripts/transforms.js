@@ -4,9 +4,9 @@ function mat4x4Perspective(prp, srp, vup, clip) {
 
     // 1. translate PRP to origin
     let trans = new Matrix(4,4);
-    let x = prp[0];
-    let y = prp[1];
-    let z = prp[2];
+    let x = prp.x;
+    let y = prp.y;
+    let z = prp.z;
     if(x!=0){
         x = -1*x;
     }
@@ -15,14 +15,14 @@ function mat4x4Perspective(prp, srp, vup, clip) {
     // 2. rotate VRC such that (u,v,n) align with (x,y,z)
 
     
-    let vprp =  new Vector3(prp[0], prp[1], prp[2]);
-    let vsrp =  new Vector3(srp[0], srp[1], srp[2]);
+    let vprp =  prp;
+    let vsrp =  srp;
     
     let n = vprp.subtract(vsrp);
     console.log(n)
     n.normalize();
 
-    let vups = new Vector3(vup[0], vup[1], vup[2]);
+    let vups = vup;
     let u = vups.cross(n);
 
     u.normalize();
@@ -139,7 +139,7 @@ function mat4x4RotateX(mat4x4, theta) {
                          [0, cosTheta, -sinTheta, 0],
                          [0, sinTheta, cosTheta, 0],
                          [0, 0, 0, 1],
-    ];
+    ]; //first sineTheta could be negative 
 }
 
 // set values of existing 4x4 matrix to the rotate about y-axis matrix
@@ -151,8 +151,7 @@ function mat4x4RotateY(mat4x4, theta) {
                      [0, 1, 0, 0],
                      [-sinTheta, 0, cosTheta, 0],
                      [0, 0, 0, 1]
-    ]           ;
-  
+    ];//first sine might be negative, and second one positive 
 }
 
 // set values of existing 4x4 matrix to the rotate about z-axis matrix

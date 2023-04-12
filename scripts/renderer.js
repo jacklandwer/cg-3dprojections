@@ -54,16 +54,23 @@ class Renderer {
                 let angle = time * rps * 2 * Math.PI;
 
                 let matrix = model.matrix;
-                console.log(model, matrix);
+                //console.log(model, matrix);
 
-                if (model.vertices) {
+                /*
+                for (let i = 0; i < this.scene.models.length; i++) {
+                    let model = this.scene.models[i];
+                    let vertices = model.vertices;
+
+                    if (model.vertices) {
+                        // Translate the model to its world position
+                        let translationMatrix = mat4x4Translate(model.matrix, model.vertices[i].x, model.vertices[i].y, model.vertices[i].z);
+                        vertices[j] = Matrix.multiply(translationMatrix, vertices[j]);
+                    }
 
 
+                    // Rotate the model around its world axis
                     for (let k = 0; k < model.vertices.length; k++) {
                         //let curVerts = model.vertices[i];
-
-                        // Create a rotation matrix based on the angle and axis of rotation
-
                         switch (axis) {
                             case "x":
                                 mat4x4RotateX(matrix, angle);
@@ -78,35 +85,16 @@ class Renderer {
                                 console.error("Invalid axis of rotation for animation");
                                 return;
                         }
-
+                        vertices[j] = Matrix.multiply(rotationMatrix, vertices[j]);
                     }
-                }
 
 
-                // TRY TO SEE IF CAN COMBINE THIS APPROACH TO GET THIS TO WORK...
-                /*
-                for (let i = 0; i < this.scene.models.length; i++) {
-                    let model = this.scene.models[i];
-                    let vertices = model.vertices;
-            
-                    // Translate the model to its world position
-                    let translationMatrix = mat4x4Translate(model.worldPosition.x, model.worldPosition.y, model.worldPosition.z);
-                    for (let j = 0; j < vertices.length; j++) {
-                        vertices[j] = mat4x4MultiplyVector(translationMatrix, vertices[j]);
-                    }
-            
-                    // Rotate the model around its world axis
-                    let rotationMatrix = mat4x4Rotate(model.worldAxis, model.worldAngle);
-                    for (let j = 0; j < vertices.length; j++) {
-                        vertices[j] = mat4x4MultiplyVector(rotationMatrix, vertices[j]);
-                    }
-            
                     // Scale the model
-                    let scaleMatrix = mat4x4Scale(model.scale.x, model.scale.y, model.scale.z);
+                    let scaleMatrix = mat4x4Scale(model.matrix, model.scale.x, model.scale.y, model.scale.z);
                     for (let j = 0; j < vertices.length; j++) {
-                        vertices[j] = mat4x4MultiplyVector(scaleMatrix, vertices[j]);
+                        vertices[j] = Matrix.multiply(scaleMatrix, vertices[j]);
                     }
-            
+
                     // Apply perspective and viewport transformations
                     let PRP = this.scene.view.prp;
                     let SRP = this.scene.view.srp;
@@ -115,25 +103,18 @@ class Renderer {
                     let perspectiveMatrix = mat4x4Perspective(PRP, SRP, VUP, Clip);
                     let viewportMatrix = mat4x4Viewport(this.canvas.width, this.canvas.height);
                     for (let j = 0; j < vertices.length; j++) {
-                        vertices[j] = mat4x4MultiplyVector(perspectiveMatrix, vertices[j]);
-                        vertices[j] = mat4x4MultiplyVector(viewportMatrix, vertices[j]);
+                        vertices[j] = Matrix.multiply(perspectiveMatrix, vertices[j]);
+                        vertices[j] = Matrix.nultiply(viewportMatrix, vertices[j]);
                     }
                 }
                 */
             }
-           
-            
-            
-            
-            
-            
-            
-
-            
 
         }
 
     }
+
+
 
 
     // Left arrow pressed. Rotate SRP around the v-axis with the PRP as the origin.
@@ -471,16 +452,7 @@ class Renderer {
             let out = (out0 !== 0) ? out0 : out1;
             let p = (out0 !== 0) ? p0 : p1;
 
-            // DO I WANT TO USE THE CONSTANTS FOR LEFT/RIGHT/TOP/BOTTOM???
-            // MAKE SURE THE CLIPPING ORDER IS CORRECT TOO...
-            const LEFT = 32; // binary 100000
-            const RIGHT = 16; // binary 010000
-            const BOTTOM = 8;  // binary 001000
-            const TOP = 4;  // binary 000100
-            const FAR = 2;  // binary 000010
-            const NEAR = 1;  // binary 000001
-
-            if ((out & NEAR) !== 0) { // 1. clip against left plane
+            if ((out & LEFT) !== 0) { // 1. clip against left plane
                 let t = (z_min - p.x) / (p1.x - p0.x);
                 p = p0 + (p1 - p0) * t;
             } else if ((out & RIGHT) !== 0) { // 2. clip against right plane

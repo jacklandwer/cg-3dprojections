@@ -22,7 +22,7 @@
             "type": "cylinder",
             "center": [12, 30, -19],
             "radius": 4,
-            "height": 15,
+            "height": 20,
             "sides": 12,
             "animation": {
                 "axis": "y",
@@ -33,7 +33,7 @@
             "type": "cone",
             "center": [15, 10, 0],
             "radius": 1,
-            "height": 2,
+            "height": 10,
             "sides": 16,
             "animation": {
                 "axis": "x",

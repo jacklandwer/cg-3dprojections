@@ -1,8 +1,8 @@
 {
     "view": {
         "type": "parallel",
-        "prp": [0, 10, 10],
-        "srp": [0, 5, 0],
+        "prp": [0, 0, 10],
+        "srp": [0, 0, 0],
         "vup": [0, 1, 0],
         "clip": [-4, 20, -1, 17, 5, 75]
     },
@@ -16,7 +16,7 @@
         }, 
         {
         "type": "cylinder",
-        "center": [12, 10, -49],
+        "center": [24, 10, -2],
         "radius": 4,
         "height": 6,
         "sides": 12,
@@ -25,14 +25,14 @@
             "rps": 0.5}}, 
         { 
             "type": "cone",
-            "center": [15, 15,-53],
+            "center": [35, 35, -3],
             "radius": 3,
             "height": 7,
-            "sides": 16
+            "sides": 6
         },
         {
             "type": "sphere",
-            "center": [15, 15, -18],
+            "center": [15, 25, -8],
             "radius": 5,
             "slices": 10,
             "stacks": 8

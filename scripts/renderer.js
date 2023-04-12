@@ -21,17 +21,17 @@ class Renderer {
 
 
         window.addEventListener('keydown', (event) => {
-            if (event.key === 'ArrowLeft') { //rotate left
+            if (event.key === 'ArrowLeft') {
                 this.rotateLeft();
-            } else if (event.key === 'ArrowRight') { //rotate right
+            } else if (event.key === 'ArrowRight') {
                 this.rotateRight();
-            } else if (event.key === 'A') { //move left
+            } else if (event.key === 'A') {
                 this.moveLeft();
-            } else if (event.key === 'D') { //move right
+            } else if (event.key === 'D') {
                 this.moveRight();
-            } else if (event.key === 'S') { //move backwards
+            } else if (event.key === 'S') {
                 this.moveBackward();
-            } else if (event.key === 'W') { //move forward
+            } else if (event.key === 'W') {
                 this.moveForward();
             }
         });
@@ -46,7 +46,6 @@ class Renderer {
 
         // what all needs to be done here..?? 
 
-        // is this where vertices and such are altered for the animation? Or what? 
         /*
         Rotation can be in the x, y, or z axis
         Animating models should rotate about their own center
@@ -65,19 +64,19 @@ class Renderer {
     rotateLeft() {
         console.log("rotating left");
 
-        let angle = Math.PI / 180; // can adjust this angle.
+        let angle = -Math.PI / 90;
 
         // Get the current SRP coordinates 
         let srp = this.scene.view.srp;
-        let srpX = srp[0];
-        let srpY = srp[1];
-        let srpZ = srp[2];
+        let srpX = srp.x;
+        let srpY = srp.y;
+        let srpZ = srp.z;
 
         // Translate the SRP coordinates to the origin
         let prp = this.scene.view.prp;
-        let newSrpX = srpX - prp[0];
-        let newSrpY = srpY - prp[1];
-        let newSrpZ = srpZ - prp[2];
+        let newSrpX = srpX - prp.x;
+        let newSrpY = srpY - prp.y;
+        let newSrpZ = srpZ - prp.z;
 
         // Rotate the SRP around the v-axis
         let rotatedSrpX = newSrpX * Math.cos(angle) + newSrpZ * Math.sin(angle);
@@ -85,13 +84,14 @@ class Renderer {
         let rotatedSrpZ = newSrpZ * Math.cos(angle) - newSrpX * Math.sin(angle);
 
         // Translate the rotated SRP coordinates back to the original position
-        let finalSrpX = rotatedSrpX + prp[0];
-        let finalSrpY = rotatedSrpY + prp[1];
-        let finalSrpZ = rotatedSrpZ + prp[2];
+        let finalSrpX = rotatedSrpX + prp.x;
+        let finalSrpY = rotatedSrpY + prp.y;
+        let finalSrpZ = rotatedSrpZ + prp.z;
 
         // Update the SRP coordinates in the processed scene object
-        this.scene.view.srp = [finalSrpX, finalSrpY, finalSrpZ]; //DOES THIS NEED TO BE MADE INTO A VECTOR3???
-        //srp: Vector3(scene.view.srp[0], scene.view.srp[1], scene.view.srp[2]),
+        this.scene.view.srp = Vector3(finalSrpX, finalSrpY, finalSrpZ);
+        
+        this.draw();
 
     }
 
@@ -99,19 +99,19 @@ class Renderer {
     rotateRight() {
         console.log('rotating right');
 
-        let angle = -Math.PI / 180; // Negative angle to rotate right
+        let angle = Math.PI / 90;
 
         // Get the current SRP coordinates
         let srp = this.scene.view.srp;
-        let srpX = srp[0];
-        let srpY = srp[1];
-        let srpZ = srp[2];
+        let srpX = srp.x;
+        let srpY = srp.y;
+        let srpZ = srp.z;
 
         // Translate the SRP coordinates to the origin
         let prp = this.scene.view.prp;
-        let newSrpX = srpX - prp[0];
-        let newSrpY = srpY - prp[1];
-        let newSrpZ = srpZ - prp[2];
+        let newSrpX = srpX - prp.x;
+        let newSrpY = srpY - prp.y;
+        let newSrpZ = srpZ - prp.z;
 
         // Rotate the SRP around the v-axis
         let rotatedSrpX = newSrpX * Math.cos(angle) + newSrpZ * Math.sin(angle);
@@ -119,13 +119,14 @@ class Renderer {
         let rotatedSrpZ = newSrpZ * Math.cos(angle) - newSrpX * Math.sin(angle);
 
         // Translate the rotated SRP coordinates back to the original position
-        let finalSrpX = rotatedSrpX + prp[0];
-        let finalSrpY = rotatedSrpY + prp[1];
-        let finalSrpZ = rotatedSrpZ + prp[2];
+        let finalSrpX = rotatedSrpX + prp.x;
+        let finalSrpY = rotatedSrpY + prp.y;
+        let finalSrpZ = rotatedSrpZ + prp.z;
 
         // Update the SRP coordinates in the processed scene object
-        this.scene.view.srp = [finalSrpX, finalSrpY, finalSrpZ]; //DOES THIS NEED TO BE MADE INTO A VECTOR3???
-        //srp: Vector3(scene.view.srp[0], scene.view.srp[1], scene.view.srp[2]),
+        this.scene.view.srp = Vector3(finalSrpX, finalSrpY, finalSrpZ);
+
+        this.draw();
 
     }
 
@@ -134,18 +135,17 @@ class Renderer {
         console.log('moving left');
 
         let dx = 1; // the amount to move to the left. CAN CHANGE ACCORDINGLY.
-        let { view } = this.scene;
+        let view = this.scene.view;
 
         // update PRP
         let prp = view.prp;
-        prp[0] -= dx;
+        prp.x += dx;
 
         // update SRP
         let srp = view.srp;
-        srp[0] -= dx;
+        srp.x += dx;
 
-        // update the scene
-        this.updateScene(this.scene);
+        this.draw();
     }
 
     // D: translate the PRP and SRP along the u-axis.
@@ -153,18 +153,17 @@ class Renderer {
         console.log('moving right');
 
         let dx = 1; // the amount to move to the right. CAN CHANGE ACCORDINGLY.
-        let { view } = this.scene;
+        let view = this.scene.view;
 
         // update PRP
         let prp = view.prp;
-        prp[0] += dx;
+        prp.x -= dx;
 
         // update SRP
         let srp = view.srp;
-        srp[0] += dx;
+        srp.x -= dx;
 
-        // update the scene
-        this.updateScene(this.scene);
+        this.draw();
     }
 
     // S: translate the PRP and SRP along the n-axis.
@@ -172,18 +171,17 @@ class Renderer {
         console.log('moving backwards');
 
         let dz = 1; // the amount to move backwards. CAN CHANGE ACCORDINGLY.
-        let { view } = this.scene;
+        let view = this.scene.view;
 
         // update PRP
         let prp = view.prp;
-        prp[2] -= dz;
+        prp.z += dz;
 
         // update SRP
         let srp = view.srp;
-        srp[2] -= dz;
+        srp.z += dz;
 
-        // update the scene
-        this.updateScene(this.scene);
+        this.draw();
     }
 
     // W: translate the PRP and SRP along the n-axis.
@@ -191,18 +189,17 @@ class Renderer {
         console.log('moving forwards');
 
         let dz = 1; // the amount to move forwards. CAN CHANGE ACCORDINGLY.
-        let { view } = this.scene;
+        let view = this.scene.view;
 
         // update PRP
         let prp = view.prp;
-        prp[2] += dz;
+        prp.z -= dz;
 
         // update SRP
         let srp = view.srp;
-        srp[2] += dz;
+        srp.z -= dz;
 
-        // update the scene
-        this.updateScene(this.scene);
+        this.draw();
     }
 
     //
@@ -221,54 +218,69 @@ class Renderer {
         //     * translate/scale to viewport (i.e. window)
         //     * draw line
 
-        /* Generate vertices and edges for common models: 
-        Cube: defined by center point, width, height, and depth.
-        Cone: defined by center point of base, radius, height, and number of sides.
-        Cylinder: defined by center point, radius, height, and number of sides.
-        Sphere: defined by center point, radius, number of slices, and number of stacks.
-        */
 
-
-        /* Bryan's code: 
-        let PRP = [0, 10, -5];
-        let SRP = [20, 15, -40];
-        let VUP = [1, 1, 0];
-
-        //translate in the future for vector 4 to get them for the buttons. 
-
-
-        let Clip = [-12, 6, -12, 6, 10, 100];
-
+        let PRP = this.scene.view.prp;
+        let SRP = this.scene.view.srp;
+        let VUP = this.scene.view.vup;
+        let Clip = this.scene.view.clip;
         let clone = mat4x4Perspective(PRP, SRP, VUP, Clip);
-        console.log('draw()');
-
-
-        console.log(this.scene.view)
-        //console.log(this.scene.models[0].vertices[0])
-        let ob = new Matrix(4, 4)
-
         let view = mat4x4Viewport(this.canvas.width, this.canvas.height);
+
+
         for (let i = 0; i < this.scene.models.length; i++) {
             let model = this.scene.models[i];
-            console.log(model)
+
+            if (model.type === 'generic') {
+                for (let k = 0; k < model.edges.length; k++) {
+                    let edge = model.edges[k];
+
+                    for (let l = 0; l < edge.length - 1; l++) {
+                        let vertexIndex1 = edge[l];
+                        let vertexIndex2 = edge[l + 1];
+                        let vertex1 = model.vertices[vertexIndex1];
+                        let vertex2 = model.vertices[vertexIndex2];
+
+                        // project to 2D
+                        let Vertex1Persp = Matrix.multiply([clone, vertex1]);
+                        let Vertex2Persp = Matrix.multiply([clone, vertex2]);
+
+                        // translate/scale to viewport (i.e. window)
+                        let Vertex1View = Matrix.multiply([view, Vertex1Persp]);
+                        let Vertex2View = Matrix.multiply([view, Vertex2Persp]);
+
+                        Vertex1View.x /= Vertex1View.w;
+                        Vertex1View.y /= Vertex1View.w;
+                        Vertex2View.x /= Vertex2View.w;
+                        Vertex2View.y /= Vertex2View.w;
+
+                        // draw line
+                        this.drawLine(Vertex1View.x, Vertex1View.y, Vertex2View.x, Vertex2View.y);
+                    }
+                }
+
+            }
+
+
             if (model.type === 'cube') {
                 console.log('generating cube vertices');
 
                 // Generate vertices for the cube
-                model.vertices = []; //Cannot set properties of undefined (setting 'vertices')
+                model.vertices = [];
                 let cubeHalfWidth = model.width / 2;
                 let cubeHalfHeight = model.height / 2;
                 let cubeHalfDepth = model.depth / 2;
-                model.vertices = [Vector4(model.center.x - cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z - cubeHalfDepth, 1),
-                Vector4(model.center.x - cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z + cubeHalfDepth, 1),
-                Vector4(model.center.x - cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z - cubeHalfDepth, 1),
-                Vector4(model.center.x - cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z + cubeHalfDepth, 1),
-                Vector4(model.center.x + cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z - cubeHalfDepth, 1),
-                Vector4(model.center.x + cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z + cubeHalfDepth, 1),
-                Vector4(model.center.x + cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z - cubeHalfDepth, 1),
-                Vector4(model.center.x + cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z + cubeHalfDepth, 1)];
 
-                console.log(model)
+                model.vertices = [
+                    Vector4(model.center.x - cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z - cubeHalfDepth, model.center.w),
+                    Vector4(model.center.x - cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z + cubeHalfDepth, model.center.w),
+                    Vector4(model.center.x - cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z - cubeHalfDepth, model.center.w),
+                    Vector4(model.center.x - cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z + cubeHalfDepth, model.center.w),
+                    Vector4(model.center.x + cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z - cubeHalfDepth, model.center.w),
+                    Vector4(model.center.x + cubeHalfWidth, model.center.y - cubeHalfHeight, model.center.z + cubeHalfDepth, model.center.w),
+                    Vector4(model.center.x + cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z - cubeHalfDepth, model.center.w),
+                    Vector4(model.center.x + cubeHalfWidth, model.center.y + cubeHalfHeight, model.center.z + cubeHalfDepth, model.center.w)
+                ];
+
                 let edges = []
                 for (let i = 0; i < model.vertices.length; i++) {
                     for (let j = i + 1; j < model.vertices.length; j++) {
@@ -290,18 +302,10 @@ class Renderer {
                 edges.push([1, 5]);
                 edges.push([2, 6]);
                 edges.push([3, 7]);
-
-                // Add the edges to the model object
-                model.edges = edges;
-
-                console.log(edges)
-
-
-
+                model.edges = edges; // Add the edges to the model object
 
                 for (let k = 0; k < model.edges.length; k++) {
                     let edge = model.edges[k];
-                    console.log(edge);
 
                     for (let l = 0; l < edge.length - 1; l++) {
                         let vertexIndex1 = edge[l];
@@ -310,8 +314,6 @@ class Renderer {
                         let vertex1 = model.vertices[vertexIndex1];
                         let vertex2 = model.vertices[vertexIndex2];
 
-
-                        console.log("hi", vertex1, vertex2);
                         //     * project to 2D
                         let Vertex1Persp = Matrix.multiply([clone, vertex1]);
                         let Vertex2Persp = Matrix.multiply([clone, vertex2]);
@@ -327,158 +329,90 @@ class Renderer {
                         this.drawLine(Vertex1View.x, Vertex1View.y, Vertex2View.x, Vertex2View.y);
                     }
                 }
-            }
-        }
-        */
-
-
-        for (let i = 0; i < this.scene.models.length; i++) {
-            let model = { type: this.scene.models[i].type }; // this valid approach?? 
-            let models = this.scene.models; // contains all of the models for shortcut.
-
-
-
-            if (this.scene.models.type === 'generic') {
-
-                //check for type 
-                console.log(model)
-                for (let k = 0; k < model.edges.length; k++) {
-                    let edge = model.edges[k];
-                    console.log(edge, edge.length);
-
-                    for (let l = 0; l < edge.length - 1; l++) {
-                        let vertexIndex1 = edge[l];
-                        let vertexIndex2 = edge[l + 1];
-                        let vertex1 = model.vertices[vertexIndex1];
-                        let vertex2 = model.vertices[vertexIndex2];
-
-                        console.log(vertex1, vertexIndex1)
-
-                        console.log("hi", vertex1);
-                        //     * project to 2D
-                        let Vertex1Persp = Matrix.multiply([clone, vertex1]);
-                        let Vertex2Persp = Matrix.multiply([clone, vertex2]);
-
-                        //     * translate/scale to viewport (i.e. window)
-                        let Vertex1View = Matrix.multiply([view, Vertex1Persp]);
-                        let Vertex2View = Matrix.multiply([view, Vertex2Persp]);
-
-                        Vertex1View.x /= Vertex1View.w;
-                        Vertex1View.y /= Vertex1View.w;
-                        Vertex2View.x /= Vertex2View.w;
-                        Vertex2View.y /= Vertex2View.w;
-
-                        //     * draw line
-                        this.drawLine(Vertex1View.x, Vertex1View.y, Vertex2View.x, Vertex2View.y);
-                    }
-                }
-
-            }
-
-
-            if (this.scene.models[i].type === 'cube') { // could shorten to models[i].type === 
-                console.log('generating cube vertices');
-
-                // Generate vertices for the cube
-                model.vertices = [];
-                let cubeHalfWidth = this.scene.models[0].width / 2;
-                let cubeHalfHeight = this.scene.models[0].height / 2;
-                let cubeHalfDepth = this.scene.models[0].depth / 2;
-
-                model.vertices = [
-                    Vector4(models[i].center.x - cubeHalfWidth, models[i].center.y - cubeHalfHeight, models[i].center.z - cubeHalfDepth, models[i].center.w),
-                    Vector4(models[i].center.x - cubeHalfWidth, models[i].center.y - cubeHalfHeight, models[i].center.z + cubeHalfDepth, models[i].center.w),
-                    Vector4(models[i].center.x - cubeHalfWidth, models[i].center.y + cubeHalfHeight, models[i].center.z - cubeHalfDepth, models[i].center.w),
-                    Vector4(models[i].center.x - cubeHalfWidth, models[i].center.y + cubeHalfHeight, models[i].center.z + cubeHalfDepth, models[i].center.w),
-                    Vector4(models[i].center.x + cubeHalfWidth, models[i].center.y - cubeHalfHeight, models[i].center.z - cubeHalfDepth, models[i].center.w),
-                    Vector4(models[i].center.x + cubeHalfWidth, models[i].center.y - cubeHalfHeight, models[i].center.z + cubeHalfDepth, models[i].center.w),
-                    Vector4(models[i].center.x + cubeHalfWidth, models[i].center.y + cubeHalfHeight, models[i].center.z - cubeHalfDepth, models[i].center.w),
-                    Vector4(models[i].center.x + cubeHalfWidth, models[i].center.y + cubeHalfHeight, models[i].center.z + cubeHalfDepth, models[i].center.w)
-                ];
 
 
             }
 
-            if (this.scene.models[i].type === 'cone') { // could shorten to models[i].type === 
+            if (model.type === 'cone') {
                 console.log('generating cone vertices');
 
                 model.vertices = [];
                 let TWO_PI = 2 * Math.PI;
-                let deltaTheta = TWO_PI / models[i].sides;
-                let halfHeight = models[i].height / 2;
+                let deltaTheta = TWO_PI / model.sides;
+                let halfHeight = model.height / 2;
 
                 // Create the base of the cone
-                for (let k = 0; k < models[i].sides; k++) {
+                for (let k = 0; k < model.sides; k++) {
                     let theta = k * deltaTheta;
-                    let x = models[i].center.x + (models[i].radius * Math.cos(theta));
-                    let z = models[i].center.z + (models[i].radius * Math.sin(theta));
+                    let x = model.center.x + (model.radius * Math.cos(theta));
+                    let z = model.center.z + (model.radius * Math.sin(theta));
 
-                    model.vertices.push(Vector4(x, models[i].center.y - halfHeight, z, models[i].center.w));
+                    model.vertices.push(Vector4(x, model.center.y - halfHeight, z, model.center.w));
                 }
 
                 // Create the tip of the cone
-                model.vertices.push(Vector4(models[i].center.x, models[i].center.y + halfHeight, models[i].center.z, models[i].center.w));
+                model.vertices.push(Vector4(model.center.x, model.center.y + halfHeight, model.center.z, model.center.w));
 
                 // Create the sides of the cone
-                for (let k = 0; k < models[i].sides; k++) {
+                for (let k = 0; k < model.sides; k++) {
                     let theta = k * deltaTheta;
-                    let x = models[i].center.x + (models[i].radius * Math.cos(theta));
-                    let z = models[i].center.z + (models[i].radius * Math.sin(theta));
+                    let x = model.center.x + (model.radius * Math.cos(theta));
+                    let z = model.center.z + (model.radius * Math.sin(theta));
 
-                    model.vertices.push(Vector4(x, models[i].center.y - halfHeight, z, models[i].center.w));
-                    model.vertices.push(Vector4(models[i].center.x, models[i].center.y + halfHeight, models[i].center.z, models[i].center.w));
+                    model.vertices.push(Vector4(x, model.center.y - halfHeight, z, model.center.w));
+                    model.vertices.push(Vector4(model.center.x, model.center.y + halfHeight, model.center.z, model.center.w));
                 }
 
             }
 
-            if (this.scene.models[i].type === 'cylinder') { // could shorten to models[i].type === 
+            if (model.type === 'cylinder') {
                 console.log('generating cylinder vertices');
 
                 // Generate vertices for the cylinder
                 model.vertices = [];
-                for (let k = 0; k < this.scene.models[i].sides; k++) {
-                    let theta = k * 2 * Math.PI / models[i].sides;
-                    let x = models[i].center.x + models[i].radius * Math.cos(theta);
-                    let y = models[i].center.y + models[i].height / 2;
-                    let z = models[i].center.z + models[i].radius * Math.sin(theta);
-                    model.vertices.push(Vector4(x, y, z, models[i].center.w));
+                for (let k = 0; k < model.sides; k++) {
+                    let theta = k * 2 * Math.PI / model.sides;
+                    let x = model.center.x + model.radius * Math.cos(theta);
+                    let y = model.center.y + model.height / 2;
+                    let z = model.center.z + model.radius * Math.sin(theta);
+                    model.vertices.push(Vector4(x, y, z, model.center.w));
                 }
 
-                for (let k = 0; k < this.scene.models[i].sides; k++) {
-                    let theta = k * 2 * Math.PI / models[i].sides;
-                    let x = models[i].center.x + models[i].radius * Math.cos(theta);
-                    let y = models[i].center.y - models[i].height / 2;
-                    let z = models[i].center.z + models[i].radius * Math.sin(theta);
-                    model.vertices.push(Vector4(x, y, z, models[i].center.w));
+                for (let k = 0; k < model.sides; k++) {
+                    let theta = k * 2 * Math.PI / model.sides;
+                    let x = model.center.x + model.radius * Math.cos(theta);
+                    let y = model.center.y - model.height / 2;
+                    let z = model.center.z + model.radius * Math.sin(theta);
+                    model.vertices.push(Vector4(x, y, z, model.center.w));
                 }
 
 
             }
 
-            if (this.scene.models[i].type === 'sphere') { // could shorten to models[i].type === 
+            if (model.type === 'sphere') {
                 console.log('generating sphere vertices');
 
                 model.vertices = [];
                 let PI = Math.PI;
                 let TWO_PI = 2 * PI;
-                let deltaPhi = PI / models[i].stacks;
-                let deltaTheta = TWO_PI / models[i].slices;
+                let deltaPhi = PI / model.stacks;
+                let deltaTheta = TWO_PI / model.slices;
 
-                for (let k = 0; k <= models[i].stacks; k++) {
+                for (let k = 0; k <= model.stacks; k++) {
                     let phi = k * deltaPhi;
                     let sinPhi = Math.sin(phi);
                     let cosPhi = Math.cos(phi);
 
-                    for (let j = 0; j <= models[i].slices; j++) {
+                    for (let j = 0; j <= model.slices; j++) {
                         let theta = j * deltaTheta;
                         let sinTheta = Math.sin(theta);
                         let cosTheta = Math.cos(theta);
 
-                        let x = models[i].center.x + (models[i].radius * sinPhi * cosTheta);
-                        let y = models[i].center.y + (models[i].radius * sinPhi * sinTheta);
-                        let z = models[i].center.z + (models[i].radius * cosPhi);
+                        let x = model.center.x + (model.radius * sinPhi * cosTheta);
+                        let y = model.center.y + (model.radius * sinPhi * sinTheta);
+                        let z = model.center.z + (model.radius * cosPhi);
 
-                        model.vertices.push(Vector4(x, y, z, models[i].center.w));
+                        model.vertices.push(Vector4(x, y, z, model.center.w));
                     }
                 }
 
@@ -486,10 +420,7 @@ class Renderer {
             }
 
 
-            console.log({ view, model }); // using to check the values of the view/models.
-
-
-
+            console.log(model.vertices, model.edges);
         }
 
 

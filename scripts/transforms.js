@@ -8,18 +8,15 @@ function mat4x4Perspective(prp, srp, vup, clip) {
     let y = prp.y;
     let z = prp.z;
     if(x!=0){
-        x = -1*x;
+        x = -1 * x;
     }
     mat4x4Translate(trans, x, -y, -z);
-    console.log(trans);
-    // 2. rotate VRC such that (u,v,n) align with (x,y,z)
 
-    
+    // 2. rotate VRC such that (u,v,n) align with (x,y,z)
     let vprp =  prp;
     let vsrp =  srp;
     
     let n = vprp.subtract(vsrp);
-    console.log(n)
     n.normalize();
 
     let vups = vup;
@@ -27,10 +24,8 @@ function mat4x4Perspective(prp, srp, vup, clip) {
 
     u.normalize();
 
-    console.log(u);
-
     let v = n.cross(u);
-    console.log(v);
+
     let Rot = new Matrix(4,4);
     Rot.values = [
         [u.x, u.y, u.z, 0],
@@ -38,7 +33,7 @@ function mat4x4Perspective(prp, srp, vup, clip) {
         [n.x, n.y, n.z, 0],
         [0,   0,   0,   1]];
 
-    console.log(Rot.values)
+
     // 3. shear such that CW is on the z-axis
     //DOP - direction of projection. VRC Virtual Viewing Coordinates (VRC) space
     let left = clip[0];
@@ -50,20 +45,17 @@ function mat4x4Perspective(prp, srp, vup, clip) {
 
     let cw = new Vector3((left+right)/2, (bottom+top)/2, -near);
     
-    
     let DOP = cw.subtract(vprp)
-    console.log("hi", DOP);
     let shx = -cw.x/cw.z;
     let shy =-cw.y/cw.z;
 
     let shearMatrix = new Matrix(4,4);
 
     mat4x4ShearXY(shearMatrix, shx, shy);
-    console.log(shearMatrix);
+
     // 4. scale such that view volume bounds are ([z,-z], [z,-z], [-1,zmin])
     //clipping???
     let zmin = -near/far;
-
 
     let xScale = (2*near / ((right - left)*far));
     let yScale = (2*near/ ((top - bottom)*far));
@@ -74,12 +66,11 @@ function mat4x4Perspective(prp, srp, vup, clip) {
     mat4x4Scale(scalingMatrix, xScale, yScale, zScale);
     
     let nper = Matrix.multiply([scalingMatrix, shearMatrix, Rot, trans]);
-    console.log(nper);
 
     let Mper = mat4x4MPer(); 
     let transform = Matrix.multiply([Mper, nper]);
-    console.log(transform);
-     return transform;
+
+    return transform;
 }
 
 // create a 4x4 matrix to project a perspective image on the z=-1 plane
